@@ -1,0 +1,4 @@
+vm_installation_path: "C:\Program Files\Oracle\VirtualBox\\"
+VM_command_path: "C:\\Program Files\\Oracle\\VirtualBox\\"
+src_path: "/home/bhavi/software_repo"
+dest_path: "C:\\Temp\\OracleVM"
