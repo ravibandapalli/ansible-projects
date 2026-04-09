@@ -7,7 +7,7 @@
     - name: Verify VM installation block
       block:
         - name: Check if Oracle VM is installed
-          ansible.builtin.win_command: powershell -Command "Get-Item 'C:\Program Files\Oracle\VirtualBox\VBoxManage.exe' -ErrorAction SilentlyContinue"
+          ansible.builtin.win_command: powershell -Command "Get-Item '{{ vm_installation_path }}VBoxManage.exe' -ErrorAction SilentlyContinue"
           register: vm_check
           ignore_errors: true
           failed_when: false
@@ -15,7 +15,7 @@
 
         - name: Debug VM presence
           ansible.builtin.debug:
-            msg: "Oracle VM is already installed at C:\Program Files\Oracle\VirtualBox\VBoxManage.exe"
+            msg: "Oracle VM is already installed at {{ vm_installation_path }}VBoxManage.exe"
           when: vm_check.rc == 0
 
         - name: Fail if Oracle VM is not found
@@ -29,15 +29,29 @@
         
         - name: Copy files to target hosts
           ansible.builtin.win_copy:
-             src: /path/to/local/files/
-             dest: C:\path\to\remote\files\
+             src: "{{ src_path }}/VirtualBox.exe"
+             dest: "{{ dest_path }}\\VirtualBox.exe"
           when: not vm_installed
 
-        - name: Install oracle vm on windows
-          ansible.builtin.win_command: powershell -Command "Start-Process -FilePath 'C:\path\to\oracle_vm_installer.exe' -ArgumentList '/silent' -Wait"
-          when: not vm_installed
+        - name: Install Oracle VM VirtualBox
+          ansible.windows.win_package:
+            path: "{{ dest_path }}\\VirtualBox.exe"
+            arguments: "/silent"
+            state: present
           register: vm_install
-          ignore_errors: true
-          failed_when: vm_install.rc != 0
-          changed_when: vm_install.rc == 0
+        
+        - name: Check if VirtualBox installed
+          ansible.windows.win_stat:
+            path: "{{ vm_installation_path }}\\VirtualBox.exe"
+          register: vm_check
+          failed_when: not vm_check.stat.exists
+          changed_when: vm_install.changed
+          
+        # - name: Install oracle vm on windows
+        #   ansible.builtin.win_command: powershell -Command "Start-Process -FilePath 'C:\path\to\oracle_vm_installer.exe' -ArgumentList '/silent' -Wait"
+        #   when: not vm_installed
+        #   register: vm_install
+        #   ignore_errors: true
+        #   failed_when: vm_install.rc != 0
+        #   changed_when: vm_install.rc == 0
 
