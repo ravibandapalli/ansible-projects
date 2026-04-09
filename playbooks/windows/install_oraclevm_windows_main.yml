@@ -1,0 +1,8 @@
+---
+- name: Install Oracle VM on Windows
+  hosts: windows
+  gather_facts: false
+
+  tasks:
+    - name: Include task to verify VM existence on target
+      ansible.builtin.include_tasks: tasks/Verify_vm_existance_target.yml
