@@ -1,0 +1,43 @@
+- name: Create VM
+  win_shell: >
+    {{ vboxmanage_path }} createvm
+    --name "{{ vm_name }}"
+    --ostype "{{ vm_os_type }}"
+    --register
+    --basefolder "{{ vm_base_folder }}"
+  args:
+    creates: "{{ vm_base_folder }}\\{{ vm_name }}"
+  register: create_vm_result
+  ignore_errors: true
+
+#Configure CPU, Memory, VRAM and Network
+- name: Configure CPU and Memory
+  win_shell: >
+    {{ vboxmanage_path }} modifyvm "{{ vm_name }}"
+    --cpus {{ vm_cpu }}
+    --memory {{ vm_memory }}
+    --vram {{ vm_vram }}
+    --nic1 {{ vm_network }}
+
+- name: Create Disk
+  win_shell: >
+    {{ vboxmanage_path }} createmedium disk
+    --filename "{{ vm_base_folder }}\\{{ vm_name }}\\{{ vm_name }}.vdi"
+    --size {{ vm_disk_size }}
+  args:
+    creates: "{{ vm_base_folder }}\\{{ vm_name }}\\{{ vm_name }}.vdi"
+
+- name: Add Storage Controller
+  win_shell: >
+    {{ vboxmanage_path }} storagectl "{{ vm_name }}"
+    --name "{{ vm_controller }}"
+    --add sata
+    --controller IntelAhci
+
+- name: Attach Disk
+  win_shell: >
+    {{ vboxmanage_path }} storageattach "{{ vm_name }}"
+    --storagectl "{{ vm_controller }}"
+    --port 0 --device 0
+    --type hdd
+    --medium "{{ vm_base_folder }}\\{{ vm_name }}\\{{ vm_name }}.vdi"

@@ -1,3 +1,4 @@
+---
 - name: Create and Configure VM
   hosts: windows
   gather_facts: false
