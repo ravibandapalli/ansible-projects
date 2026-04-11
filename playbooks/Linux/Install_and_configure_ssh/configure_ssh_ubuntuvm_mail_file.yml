@@ -1,0 +1,14 @@
+---
+- name: Configure SSH on Ubuntu VM
+  hosts: ubuntu_vms
+  gather_facts: no
+
+  vars:
+    ssh_user: ansible
+    disable_password_auth: true
+
+  tasks:
+    - name: Include SSH configuration tasks
+      import_tasks: tasks/configure_ssh_ubuntu.yml
+
+...

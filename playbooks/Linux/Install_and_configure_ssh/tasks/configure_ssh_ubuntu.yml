@@ -1,0 +1,41 @@
+- name: Ensure packages
+  ansible.builtin.apt:
+    name: openssh-server
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: Create ansible user
+  ansible.builtin.user:
+    name: "{{ ssh_user }}"
+    groups: sudo
+    shell: /bin/bash
+    create_home: yes
+  become: yes
+
+- name: Setup .ssh directory
+  ansible.builtin.file:
+    path: "/home/{{ ssh_user }}/.ssh"
+    state: directory
+    owner: "{{ ssh_user }}"
+    mode: '0755'
+  become: yes
+
+- name: Add SSH key
+  ansible.builtin.authorized_key:
+    user: "{{ ssh_user }}"
+    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+  become: yes
+
+- name: Deploy ssh config
+  ansible.builtin.template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+  notify: Restart SSH
+  become: yes
+
+- name: Restart SSH
+  ansible.builtin.service:
+    name: ssh
+    state: restarted
+  become: yes

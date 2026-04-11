@@ -1,0 +1,66 @@
+- name: Ensure apt cache is updated
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  become: yes
+  when: update_packages
+
+- name: Upgrade all packages
+  ansible.builtin.apt:
+    upgrade: dist
+  become: yes
+  when: update_packages
+
+# -------------------------
+# Install Git
+# -------------------------
+- name: Install Git
+  ansible.builtin.apt:
+    name: git
+    state: present
+  become: yes
+  when: install_git
+
+# -------------------------
+# Install Ansible
+# -------------------------
+- name: Install Ansible dependencies
+  ansible.builtin.apt:
+    name: software-properties-common
+    state: present
+  become: yes
+  when: install_ansible
+
+- name: Add Ansible repository
+  ansible.builtin.apt_repository:
+    repo: ppa:ansible/ansible
+    state: present
+  become: yes
+  when: install_ansible
+
+- name: Install Ansible
+  ansible.builtin.apt:
+    name: ansible
+    state: present
+    update_cache: yes
+  become: yes
+  when: install_ansible
+
+# -------------------------
+# Verify installations
+# -------------------------
+- name: Check Git version
+  ansible.builtin.command: git --version
+  register: git_version
+  changed_when: false
+
+- debug:
+    var: git_version.stdout
+
+- name: Check Ansible version
+  ansible.builtin.command: ansible --version
+  register: ansible_version
+  changed_when: false
+
+- ansible.builtin.debug:
+    var: ansible_version.stdout

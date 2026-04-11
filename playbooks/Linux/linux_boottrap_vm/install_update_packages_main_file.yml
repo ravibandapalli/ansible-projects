@@ -1,0 +1,16 @@
+---
+- name: Install updates, Git, and Ansible
+  hosts: ubuntu_vms
+  become: yes
+  gather_facts: false
+
+  vars: 
+    update_packages: true
+    install_ansible: true
+    install_git: true
+
+  tasks:
+    - name: Install updates, Git, and Ansible
+      import_tasks: tasks/install_git_ansible_updates.yml
+
+---
