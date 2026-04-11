@@ -1,0 +1,17 @@
+- name: Attach Ubuntu ISO
+  ansible.builtin.win_shell: >
+    {{ vboxmanage_path }} storageattach "{{ vm_name }}"
+    --storagectl "{{ vm_controller }}"
+    --port 1 --device 0
+    --type dvddrive
+    --medium "{{ vm_iso_path }}"
+
+- name: Start VM
+  ansible.builtin.win_shell: >
+    {{ vboxmanage_path }} startvm "{{ vm_name }}" --type headless
+  register: start_vm_result
+  ignore_errors: true
+
+- name: Debug VM start result
+  ansible.builtin.debug:
+    msg: "VM start result: {{ start_vm_result }}"

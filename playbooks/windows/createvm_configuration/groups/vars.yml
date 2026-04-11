@@ -1,0 +1,10 @@
+vm_name: "ubuntu-auto-vm"
+vm_os_type: "Ubuntu_64"
+vm_cpu: 2
+vm_memory: 4096   # MB
+vm_vram: 128
+vm_disk_size: 60000  # MB
+vm_iso_path: "C:\\Users\\Bhavi\\Downloads\\ubuntu-22.04.3-live-server-amd64.iso"
+vm_network: "nat"
+vm_controller: "SATA Controller"
+vm_base_folder: "C:\\VMs"
