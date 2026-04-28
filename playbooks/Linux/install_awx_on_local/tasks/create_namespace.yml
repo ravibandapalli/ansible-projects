@@ -1,0 +1,4 @@
+- name: Create AWX namespace
+  ansible.builtin.shell: |
+    kubectl create namespace awx
+  ignore_errors: yes

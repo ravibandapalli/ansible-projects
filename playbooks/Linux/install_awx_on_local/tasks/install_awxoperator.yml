@@ -1,0 +1,12 @@
+
+- name: Install AWX Operator
+  ansible.builtin.shell: |
+    kubectl apply -k https://github.com/ansible/awx-operator/config/default?ref=2.19.1
+
+- name: Wait for AWX Operator pod
+  ansible.builtin.shell: |
+    kubectl get pods -n awx
+  register: operator_status
+  retries: 15
+  delay: 20
+  until: "'Running' in operator_status.stdout"

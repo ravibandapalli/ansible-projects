@@ -1,0 +1,20 @@
+- name: Create AWX instance file
+  ansible.builtin.copy:
+    dest: /tmp/awx.yaml
+    content: |
+      apiVersion: awx.ansible.com/v1beta1
+      kind: AWX
+      metadata:
+        name: awx-demo
+        namespace: awx
+      spec:
+        service_type: nodeport
+
+- name: Apply AWX instance
+  ansible.builtin.shell: |
+    kubectl apply -f /tmp/awx.yaml
+  register: awx_apply
+
+- name: Debug AWX apply output
+  ansible.builtin.debug:
+    var: awx_apply.stdout

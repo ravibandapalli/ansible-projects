@@ -1,0 +1,14 @@
+---
+- name: Install AWX on k3s
+  hosts: localhost
+  become: yes
+
+  tasks:
+    - name: Create namespace
+      import_tasks: tasks/create_namespace.yml
+
+    - name: Install AWX operator
+      import_tasks: tasks/install_awxoperator.yml
+
+    - name: Deploy AWX instance
+      import_tasks: tasks/deploy_awx.yml
